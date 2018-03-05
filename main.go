@@ -32,7 +32,7 @@ func main() {
 	must(err)
 	err = db.Ping()
 	must(err)
-	GetClient(db,0)
+	GetClient(db, 0)
 	defer db.Close()
 }
 
@@ -44,16 +44,20 @@ func must(err error) {
 }
 
 type Meta struct {
-	ClientConfig  Content `json:"client_config"`
+	ClientConfig Content `json:"client_config"`
 }
 
 type Content struct {
-	Logo         string `json:"logo"`
-	Tax_id       string `json:"tax_id"`
-	Member_url   string `json:"member_url"`
-	Time_servers []string `json:"time_servers"`
-	Client       Client `json:"client"`
+	Logo              string `json:"logo"`
+	Tax_id            string `json:"tax_id"`
+	Member_url        string `json:"member_url"`
+	Time_servers      []string `json:"time_servers"`
+	Client            Client `json:"client"`
+	Cash              Cash `json:"cash"`
+	CashAcceptedValue CashAcceptedValue `json:"cash_accepted_value"`
+	ChangeRefillValue ChangeRefillValue `json:"change_refill_value"`
 }
+
 type Client  struct {
 	Shop_title               string `json:"shop_title"`
 	Shop_website             string `json:"shop_website"`
@@ -66,19 +70,47 @@ type Client  struct {
 	Print_queue_receipt_mode int `json:"print_queue_receipt_mode"`
 }
 
+type Cash  struct {
+	Max_change_cash int
+	Max_change_coin int
+	Min_change      int
+}
+
+type CashAcceptedValue struct {
+	B20   int
+	B50   int
+	B100  int
+	B500  int
+	B1000 int
+}
+
+type ChangeRefillValue struct {
+	V1    int
+	V2    int
+	V5    int
+	V10   int
+	V20   int
+	V50   int
+	V100  int
+	V500  int
+	V1000 int
+}
+
 type ClientTable struct {
-	Id int64
+	Id   int64
 	Meta sql.NullString
 }
+
 func GetClient(db *sql.DB, id int64) (error) {
-	_c:=ClientTable{}
+	_c := ClientTable{}
 	m := Meta{}
-
-	rs := db.QueryRow("select id,meta from clients where id = ?",id)
+	lccommand := "select id,meta from clients where id = ?"
+	fmt.Println(lccommand)
+	rs := db.QueryRow(lccommand, id)
 	rs.Scan(&_c)
+
+	fmt.Println(_c)
 	stringMeta := _c.Meta.String
-
-
 
 	_ = json.Unmarshal([]byte(stringMeta), &m)
 	fmt.Println(m)
