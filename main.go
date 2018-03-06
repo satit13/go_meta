@@ -90,7 +90,7 @@ type ClientTable struct {
 
 
 func main() {
-	log.Println("Meta Testt ")
+	log.Println("Meta Test ")
 	conn := fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s sslmode=%s",
 		dbName, dbUser, dbPass, dbHost, dbPort, sslMode)
 
